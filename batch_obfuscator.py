@@ -262,14 +262,16 @@ def tokenize_line(line: str, user_vars: Set[str]) -> List[Token]:
 def obfuscate_text(text: str, keys: List[str], values: List[str]) -> str:
     buf: List[str] = []
     for ch in text:
-        replaced = False
+        candidates = []
         for idx, val in enumerate(values):
             pos = val.find(ch)
             if pos != -1:
-                buf.append(f"%{keys[idx]}:~{pos},1%")
-                replaced = True
-                break
-        if not replaced:
+                candidates.append((idx, pos))
+        
+        if candidates:
+            idx, pos = random.choice(candidates)
+            buf.append(f"%{keys[idx]}:~{pos},1%")
+        else:
             buf.append(ch)
     return "".join(buf)
 
